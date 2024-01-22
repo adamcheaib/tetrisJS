@@ -10,7 +10,7 @@ let row_lines = 0;
 let column_lines = 0;
 
 // Generates rows.
-for (let i = 0; i < game_table.length; i++) {
+for (let i = 0; i < game_table.length + 1; i++) {
     context.beginPath();
     context.moveTo(0,row_lines);
     context.lineTo(canvas.width, row_lines);

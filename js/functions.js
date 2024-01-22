@@ -19,8 +19,10 @@ const game_table =
     ];
 
 let current_block;
-let block_width = 60;
-let block_height = 50;
+
+// Continue here. The sizes need to be adjusted based on each box created in the table.
+let block_width = 49;
+let block_height = 59;
 
 function generateTetrisBlock() {
     const block_variation = [
@@ -40,8 +42,9 @@ function generateTetrisBlock() {
 
 function spawn_block(block_info) {
     // Game_table
-
 }
+
+spawn_block()
 
 // function check_straight_line() {
 //
