@@ -7,11 +7,22 @@ canvas.width = 500;
 canvas.height = 720;
 
 let row_lines = 0;
+let column_lines = 0;
 
-for (let i = 0; i < 12; i++) {
+// Generates rows.
+for (let i = 0; i < game_table.length; i++) {
     context.beginPath();
     context.moveTo(0,row_lines);
     context.lineTo(canvas.width, row_lines);
     context.stroke();
     row_lines += 60;
+}
+
+// Generates columns.
+for (let i = 0; i < 11; i++) {
+    context.beginPath();
+    context.moveTo(column_lines, 0);
+    context.lineTo(column_lines, canvas.height);
+    context.stroke();
+    column_lines += canvas.width / 10;
 }

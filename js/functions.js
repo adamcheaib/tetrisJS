@@ -16,10 +16,11 @@ const game_table =
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     ];
 
 let current_block;
+let block_width = 60;
+let block_height = 50;
 
 function generateTetrisBlock() {
     const block_variation = [
