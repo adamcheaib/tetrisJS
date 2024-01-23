@@ -18,20 +18,28 @@ const game_table =
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
 
-let current_block;
+const canvas = document.getElementById(("canvas"));
+const context = canvas.getContext("2d");
 
-// Continue here. The sizes need to be adjusted based on each box created in the table.
-let block_width = 49;
-let block_height = 59;
+canvas.width = 500;
+canvas.height = 720;
 
-function generateTetrisBlock() {
+const amount_of_columns = game_table[0].length;
+const amount_of_rows = game_table.length;
+
+let column_width = canvas.width / amount_of_columns;
+let row_height = canvas.height / amount_of_rows;
+
+let existing_blocks = [];
+
+function generate_tetris_block_info() {
     const block_variation = [
         {name: "i-block", column_sequence: [3, 4, 5, 6], row_sequence: [0, 0, 0, 0], color: "lightblue"},
         {name: "j-block", column_sequence: [3, 3, 4, 5], row_sequence: [0, 1, 1, 1], color: "blue"},
         {name: "l-block", column_sequence: [3, 4, 5, 5], row_sequence: [1, 1, 1, 0], color: "orange"},
         {name: "o-block", column_sequence: [3, 4, 3, 4], row_sequence: [0, 0, 1, 1], color: "yellow"},
         {name: "s-block", column_sequence: [3, 4, 4, 5], row_sequence: [1, 1, 0, 0], color: "green"},
-        {name: "t-block", column_sequence: [3, 4, 4, 5], row_sequence: [0, 1, 1, 1], color: "purple"},
+        {name: "t-block", column_sequence: [3, 4, 4, 5], row_sequence: [1, 0, 1, 1], color: "purple"},
         {name: "z-block", column_sequence: [3, 4, 4, 5], row_sequence: [0, 0, 1, 1], color: "red"}
     ];
 
@@ -40,12 +48,43 @@ function generateTetrisBlock() {
     return selected_block;
 }
 
-function spawn_block(block_info) {
-    // Game_table
+// Places the block at the top.
+function spawn_new_block(game_table, block_info) {
+    for (let i = 0; i < block_info.column_sequence.length; i++) {
+        game_table[block_info.row_sequence[i]][block_info.column_sequence[i]] = 1;
+    }
+
+    existing_blocks.unshift(block_info);
+    row_lines = 0;
+    column_lines = 0;
+    go_through_rows(block_info);
+}
+function go_through_rows(block_info) {
+    for (let row = 0; row < game_table.length; row++) {
+        go_through_columns(row, block_info);
+    }
 }
 
-spawn_block()
+function go_through_columns(row, block_info) {
+    for (let column = 0; column < game_table.length; column++) {
+        if (game_table[row][column] === 1) push_block_to_game(column, row, block_info)
+    }
+}
 
-// function check_straight_line() {
-//
-// }
+function push_block_to_game(column, row, block_info){
+    context.fillStyle = block_info.color;
+    context.fillRect(
+        column_width * column + 1,
+        row_height * row + 1,
+        column_width - 2,
+        row_height - 2,
+    )
+
+    existing_blocks.unshift(block_info);
+}
+
+function draw_blocks() {
+    existing_blocks.forEach(block => {
+
+    })
+}
