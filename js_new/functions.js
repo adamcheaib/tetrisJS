@@ -16,6 +16,8 @@ const column_size = canvas.width / columns_amount;
 const block_tile_height = row_size - 2;
 const block_tile_width = column_size - 2;
 
+let gameplay_array = [];
+
 function draw_rows_and_columns() {
     for (let i = 0; i < columns_amount + 1; i++) { // The + 1 is just to draw the right border of the table.
         context.beginPath();
@@ -58,13 +60,21 @@ function draw_block(block_object) {
             block_tile_height,
         )
     }
+
+    gameplay_array.push(block_object);
 }
 
 function add_player_control(event) {
+    console.clear();
+    console.table(game_table)
 
     if (event.key === "ArrowRight") {
         // Make sure that the row you are passing as argument is correct!
-        if (control_possible_horizontal_movement("right", current_controlled_block.column_sequence, 0) === true) {
+        if (control_possible_horizontal_movement(
+            "right",
+            current_controlled_block.column_sequence,
+            0) === true)
+        {
             for (let i = 0; i < current_controlled_block.column_sequence.length; i++) {
                 current_controlled_block.column_sequence[i]++;
             }
@@ -73,7 +83,11 @@ function add_player_control(event) {
 
         if (event.key === "ArrowLeft") {
             // Make sure that the row you are passing as argument is correct!
-            if (control_possible_horizontal_movement("left", current_controlled_block.column_sequence, 0) === true) {
+            if (control_possible_horizontal_movement(
+                "left",
+                current_controlled_block.column_sequence,
+                0) === true)
+            {
                 for (let i = 0; i < current_controlled_block.column_sequence.length; i++) {
                     current_controlled_block.column_sequence[i]--;
                 }
@@ -82,7 +96,7 @@ function add_player_control(event) {
 
         context.clearRect(0,0, canvas.width, canvas.height);
         draw_rows_and_columns();
-        draw_block(current_controlled_block);
+        draw_block(current_controlled_block, gameplay_array);
 }
 
 // Must go through this function again once I
