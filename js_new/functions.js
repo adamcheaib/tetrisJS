@@ -35,7 +35,7 @@ function draw_rows_and_columns() {
 }
 
 
-function generate_tetris_block_info() {
+function generate_tetris_block_info(arr) {
     const block_variation = [
         {name: "i-block", column_sequence: [3, 4, 5, 6], row_sequence: [0, 0, 0, 0], color: "lightblue"},
         {name: "j-block", column_sequence: [3, 3, 4, 5], row_sequence: [0, 1, 1, 1], color: "blue"},
@@ -46,7 +46,15 @@ function generate_tetris_block_info() {
         {name: "z-block", column_sequence: [3, 4, 4, 5], row_sequence: [0, 0, 1, 1], color: "red"}
     ];
 
-    return block_variation[Math.floor(Math.random() * block_variation.length)];
+    const new_block = block_variation[Math.floor(Math.random() * block_variation.length)];
+    new_block.id = arr.length + 1;
+    arr.unshift(new_block);
+}
+
+function draw_all_blocks() {
+    for (let i = 0; i < gameplay_array.length; i++) {
+        draw_block(gameplay_array[i]);
+    }
 }
 
 function draw_block(block_object) {
@@ -60,62 +68,112 @@ function draw_block(block_object) {
             block_tile_height,
         )
     }
-
-    gameplay_array.push(block_object);
 }
 
+
 function add_player_control(event) {
-    console.clear();
-    console.table(game_table)
+    console.log(event);
+    let bool = false;
 
     if (event.key === "ArrowRight") {
         // Make sure that the row you are passing as argument is correct!
         if (control_possible_horizontal_movement(
             "right",
-            current_controlled_block.column_sequence,
-            0) === true)
-        {
-            for (let i = 0; i < current_controlled_block.column_sequence.length; i++) {
-                current_controlled_block.column_sequence[i]++;
+            gameplay_array[0].column_sequence,
+            0) === true) {
+            for (let i = 0; i < gameplay_array[0].column_sequence.length; i++) {
+                gameplay_array[0].column_sequence[i]++;
+            }
+
+            bool = true;
+        }
+    }
+
+    if (event.key === "ArrowLeft") {
+        // Make sure that the row you are passing as argument is correct!
+        if (control_possible_horizontal_movement(
+            "left",
+            gameplay_array[0].column_sequence,
+            0) === true) {
+            for (let i = 0; i < gameplay_array[0].column_sequence.length; i++) {
+                gameplay_array[0].column_sequence[i]--;
+            }
+            bool = true;
+        }
+    }
+
+    if (event.key === "ArrowDown") {
+        if (control_possible_vertical_movement()) {
+            move_block_down(gameplay_array[0]);
+            bool = true;
+        }
+    }
+
+
+    if (bool) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        draw_rows_and_columns();
+        draw_all_blocks();
+        update_table();
+    }
+
+    // console.clear();
+    // console.table(game_table);
+}
+
+function control_possible_horizontal_movement(direction, column_positions, row_positions) {
+    if (direction === "left") {
+
+        if (game_table[row_positions][column_positions[0] - 1] === undefined
+            ||
+            game_table[row_positions][column_positions[0] - 1] !== gameplay_array[0].id
+            &&
+            game_table[row_positions][column_positions[0] - 1] !== 0
+        ) return false;
+
+    }
+
+    if (direction === "right") {
+        if (game_table[row_positions][column_positions[3] + 1] === undefined
+            ||
+            game_table[row_positions][column_positions[3] + 1] !== gameplay_array[0].id
+            &&
+            game_table[row_positions][column_positions[3] + 1] !== 0
+        ) return false;
+    }
+
+    return true;
+}
+
+// This function should trigger the check full lines and spawning new block.
+function control_possible_vertical_movement() {
+    console.table(game_table);
+    console.log(gameplay_array[0]);
+
+    // Controls that it stops at the bottom.
+    if (game_table[Math.max(...gameplay_array[0].row_sequence) + 1] === undefined) {
+        generate_tetris_block_info(gameplay_array);
+        update_table();
+        return false;
+    }
+
+    for (let i = 0; i < gameplay_array[0].column_sequence.length; i++) {
+
+        if (game_table[gameplay_array[0].row_sequence[i] + 1][gameplay_array[0].column_sequence[i]] !== 0) {
+            if (game_table[gameplay_array[0].row_sequence[i] + 1][gameplay_array[0].column_sequence[i]] !== gameplay_array[0].id) {
+                generate_tetris_block_info(gameplay_array);
+                update_table();
+                return false;
             }
         }
     }
 
-        if (event.key === "ArrowLeft") {
-            // Make sure that the row you are passing as argument is correct!
-            if (control_possible_horizontal_movement(
-                "left",
-                current_controlled_block.column_sequence,
-                0) === true)
-            {
-                for (let i = 0; i < current_controlled_block.column_sequence.length; i++) {
-                    current_controlled_block.column_sequence[i]--;
-                }
-            }
-        }
 
-        context.clearRect(0,0, canvas.width, canvas.height);
-        draw_rows_and_columns();
-        draw_block(current_controlled_block, gameplay_array);
+    return true;
 }
 
-// Must go through this function again once I
-function control_possible_horizontal_movement(direction, column_positions, row_positions) {
-   if (direction === "left") {
-
-       if (game_table[row_positions][column_positions[0] - 1] === undefined
-           ||
-           game_table[row_positions][column_positions[0] - 1] === 1
-       )
-           return false;
-   }
-
-   if (direction === "right") {
-       if (game_table[row_positions][column_positions[3] + 1] === undefined
-           ||
-           game_table[row_positions][column_positions[3] + 1] === 1
-       ) return false;
-   }
-
-   return true;
+function move_block_down() {
+    for (let i = 0; i < gameplay_array[0].row_sequence.length; i++) {
+        gameplay_array[0].row_sequence[i]++;
+    }
 }

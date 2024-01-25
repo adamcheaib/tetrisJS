@@ -1,18 +1,18 @@
 "use strict"
 
-let current_controlled_block = generate_tetris_block_info();
-let game_interval;
+// The interval should be where the logic runs.
+let game_interval = setInterval(() => {
+    add_player_control({key: "ArrowDown"})
+}, 1000)
 
+generate_tetris_block_info(gameplay_array);
+update_table();
 
-
-function gameplay_loop() {
-    // context.clearRect(0,0, canvas.width, canvas.height);
-    // These should run within a gameplay loop.
+function render_graphics() {
+    context.clearRect(0, 0, canvas.width, canvas.height);
     draw_rows_and_columns();
-    draw_block(current_controlled_block, gameplay_array);
-    update_map(gameplay_array);
-    // requestAnimationFrame(gameplay_loop);
+    draw_all_blocks();
 }
 
+render_graphics();
 window.addEventListener("keyup", add_player_control);
-gameplay_loop();
