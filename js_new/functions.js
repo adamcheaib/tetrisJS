@@ -72,15 +72,11 @@ function draw_block(block_object) {
 
 
 function add_player_control(event) {
-    console.log(event);
     let bool = false;
 
     if (event.key === "ArrowRight") {
         // Make sure that the row you are passing as argument is correct!
-        if (control_possible_horizontal_movement(
-            "right",
-            gameplay_array[0].column_sequence,
-            0) === true) {
+        if (control_possible_horizontal_movement("right")) {
             for (let i = 0; i < gameplay_array[0].column_sequence.length; i++) {
                 gameplay_array[0].column_sequence[i]++;
             }
@@ -92,9 +88,7 @@ function add_player_control(event) {
     if (event.key === "ArrowLeft") {
         // Make sure that the row you are passing as argument is correct!
         if (control_possible_horizontal_movement(
-            "left",
-            gameplay_array[0].column_sequence,
-            0) === true) {
+            "left") === true) {
             for (let i = 0; i < gameplay_array[0].column_sequence.length; i++) {
                 gameplay_array[0].column_sequence[i]--;
             }
@@ -115,40 +109,45 @@ function add_player_control(event) {
         draw_rows_and_columns();
         draw_all_blocks();
         update_table();
+        // console.clear();
+        // console.table(game_table);
     }
 
     // console.clear();
     // console.table(game_table);
 }
 
-function control_possible_horizontal_movement(direction, column_positions, row_positions) {
+function control_possible_horizontal_movement(direction) {
+
     if (direction === "left") {
+        for (let index = 0; index < gameplay_array[0].row_sequence.length; index++) {
+            if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] - 1] === undefined) return false;
 
-        if (game_table[row_positions][column_positions[0] - 1] === undefined
-            ||
-            game_table[row_positions][column_positions[0] - 1] !== gameplay_array[0].id
-            &&
-            game_table[row_positions][column_positions[0] - 1] !== 0
-        ) return false;
-
+            if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] - 1] !== 0) {
+                if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] - 1] !== gameplay_array[0].id) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     if (direction === "right") {
-        if (game_table[row_positions][column_positions[3] + 1] === undefined
-            ||
-            game_table[row_positions][column_positions[3] + 1] !== gameplay_array[0].id
-            &&
-            game_table[row_positions][column_positions[3] + 1] !== 0
-        ) return false;
-    }
+        for (let index = 0; index < gameplay_array[0].row_sequence.length; index++) {
+            if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] + 1] === undefined) return false;
 
-    return true;
+            if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] + 1] !== 0) {
+                if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] + 1] !== gameplay_array[0].id) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
 
 // This function should trigger the check full lines and spawning new block.
 function control_possible_vertical_movement() {
-    console.table(game_table);
-    console.log(gameplay_array[0]);
 
     // Controls that it stops at the bottom.
     if (game_table[Math.max(...gameplay_array[0].row_sequence) + 1] === undefined) {
@@ -158,7 +157,6 @@ function control_possible_vertical_movement() {
     }
 
     for (let i = 0; i < gameplay_array[0].column_sequence.length; i++) {
-
         if (game_table[gameplay_array[0].row_sequence[i] + 1][gameplay_array[0].column_sequence[i]] !== 0) {
             if (game_table[gameplay_array[0].row_sequence[i] + 1][gameplay_array[0].column_sequence[i]] !== gameplay_array[0].id) {
                 generate_tetris_block_info(gameplay_array);
