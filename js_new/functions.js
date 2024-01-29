@@ -37,16 +37,51 @@ function draw_rows_and_columns() {
 
 function generate_tetris_block_info(arr) {
     const block_variation = [
-        {name: "i-block", column_sequence: [3, 4, 5, 6], row_sequence: [0, 0, 0, 0], color: "lightblue"},
-        {name: "j-block", column_sequence: [3, 3, 4, 5], row_sequence: [0, 1, 1, 1], color: "blue"},
-        {name: "l-block", column_sequence: [3, 4, 5, 5], row_sequence: [1, 1, 1, 0], color: "orange"},
-        {name: "o-block", column_sequence: [3, 4, 3, 4], row_sequence: [0, 0, 1, 1], color: "yellow"},
-        {name: "s-block", column_sequence: [3, 4, 4, 5], row_sequence: [1, 1, 0, 0], color: "green"},
-        {name: "t-block", column_sequence: [3, 4, 4, 5], row_sequence: [1, 0, 1, 1], color: "purple"},
-        {name: "z-block", column_sequence: [3, 4, 4, 5], row_sequence: [0, 0, 1, 1], color: "red"}
+        {
+            name: "i-block",
+            column_sequence: [3, 4, 5, 6],
+            row_sequence: [0, 0, 0, 0],
+            color: "lightblue"
+        },
+        {
+            name: "j-block",
+            column_sequence: [3, 3, 4, 5],
+            row_sequence: [0, 1, 1, 1],
+            color: "blue",
+        },
+        {
+            name: "l-block",
+            column_sequence: [3, 4, 5, 5],
+            row_sequence: [1, 1, 1, 0],
+            color: "orange",
+        },
+        {
+            name: "o-block",
+            column_sequence: [3, 4, 3, 4],
+            row_sequence: [0, 0, 1, 1],
+            color: "yellow",
+        },
+        {
+            name: "s-block",
+            column_sequence: [3, 4, 4, 5],
+            row_sequence: [1, 1, 0, 0],
+            color: "green",
+        },
+        {
+            name: "t-block",
+            column_sequence: [3, 4, 4, 5],
+            row_sequence: [1, 0, 1, 1],
+            color: "purple",
+        },
+        {
+            name: "z-block",
+            column_sequence: [3, 4, 4, 5],  // Rotated: [4, 3, 4, 3], Old: [3, 4, 4, 5] - increase, decrease, contain, decrease with 2.
+            row_sequence: [0, 0, 1, 1], // Rotated: [0, 1, 1, 2], Old: [0,0,1,1] - contain, decrease, contain, decrease
+            color: "red",
+        }
     ];
 
-    const new_block = block_variation[Math.floor(Math.random() * block_variation.length)];
+    const new_block = block_variation[3];
     new_block.id = arr.length + 1;
     arr.unshift(new_block);
 }
@@ -109,22 +144,22 @@ function add_player_control(event) {
         draw_rows_and_columns();
         draw_all_blocks();
         update_table();
-        // console.clear();
-        // console.table(game_table);
     }
 
-    // console.clear();
-    // console.table(game_table);
 }
 
 function control_possible_horizontal_movement(direction) {
 
     if (direction === "left") {
         for (let index = 0; index < gameplay_array[0].row_sequence.length; index++) {
-            if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] - 1] === undefined) return false;
+            let same_row = gameplay_array[0].row_sequence[index];
+            let next_column = gameplay_array[0].column_sequence[index] - 1;
 
-            if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] - 1] !== 0) {
-                if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] - 1] !== gameplay_array[0].id) {
+
+            if (game_table[same_row][next_column] === undefined) return false;
+
+            if (game_table[same_row][next_column] !== 0) {
+                if (game_table[same_row][next_column] !== gameplay_array[0].id) {
                     return false;
                 }
             }
@@ -134,10 +169,13 @@ function control_possible_horizontal_movement(direction) {
 
     if (direction === "right") {
         for (let index = 0; index < gameplay_array[0].row_sequence.length; index++) {
-            if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] + 1] === undefined) return false;
+            let same_row = gameplay_array[0].row_sequence[index];
+            let next_column = gameplay_array[0].column_sequence[index] + 1;
 
-            if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] + 1] !== 0) {
-                if (game_table[gameplay_array[0].row_sequence[index]][gameplay_array[0].column_sequence[index] + 1] !== gameplay_array[0].id) {
+            if (game_table[same_row][next_column] === undefined) return false;
+
+            if (game_table[same_row][next_column] !== 0) {
+                if (game_table[same_row][next_column] !== gameplay_array[0].id) {
                     return false;
                 }
             }
@@ -153,15 +191,20 @@ function control_possible_vertical_movement() {
     if (game_table[Math.max(...gameplay_array[0].row_sequence) + 1] === undefined) {
         generate_tetris_block_info(gameplay_array);
         update_table();
+        check_for_full_lines();
         return false;
     }
 
     for (let i = 0; i < gameplay_array[0].column_sequence.length; i++) {
-        if (game_table[gameplay_array[0].row_sequence[i] + 1][gameplay_array[0].column_sequence[i]] !== 0) {
-            if (game_table[gameplay_array[0].row_sequence[i] + 1][gameplay_array[0].column_sequence[i]] !== gameplay_array[0].id) {
-                generate_tetris_block_info(gameplay_array);
-                update_table();
-                return false;
+        if (gameplay_array[0].row_sequence.length !== 0) {
+            if (game_table[gameplay_array[0].row_sequence[i] + 1][gameplay_array[0].column_sequence[i]] !== 0) {
+                if (game_table[gameplay_array[0].row_sequence[i] + 1][gameplay_array[0].column_sequence[i]] !== gameplay_array[0].id) {
+                    generate_tetris_block_info(gameplay_array);
+                    update_table();
+                    check_for_full_lines();
+                    console.log("Lines checked.");
+                    return false;
+                }
             }
         }
     }
